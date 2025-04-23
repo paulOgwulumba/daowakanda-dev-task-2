@@ -1,0 +1,417 @@
+#pragma version 10
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    intcblock 0 1 4 200000
+    bytecblock "assetId"
+    // smart_contracts/asset_distributor/contract.algo.ts:14
+    // export class AssetDistributor extends Contract {
+    txn NumAppArgs
+    bz main_after_if_else@11
+    pushbytess 0xb8447b36 0x1e32019a 0x7b91e94e 0x025fdad3 0x2487c32c // method "createApplication()void", method "bootstrap(pay,uint64)void", method "buyListing(pay)void", method "withdrawEarnings()void", method "deleteApplication()void"
+    txna ApplicationArgs 0
+    match main_createApplication_route@3 main_bootstrap_route@4 main_buyListing_route@5 main_withdrawEarnings_route@6 main_deleteApplication_route@7
+
+main_after_if_else@11:
+    // smart_contracts/asset_distributor/contract.algo.ts:14
+    // export class AssetDistributor extends Contract {
+    intc_0 // 0
+    return
+
+main_deleteApplication_route@7:
+    // smart_contracts/asset_distributor/contract.algo.ts:72
+    // @abimethod({ allowActions: 'DeleteApplication' })
+    txn OnCompletion
+    pushint 5 // DeleteApplication
+    ==
+    assert // OnCompletion is not DeleteApplication
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub deleteApplication
+    intc_1 // 1
+    return
+
+main_withdrawEarnings_route@6:
+    // smart_contracts/asset_distributor/contract.algo.ts:60
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub withdrawEarnings
+    intc_1 // 1
+    return
+
+main_buyListing_route@5:
+    // smart_contracts/asset_distributor/contract.algo.ts:41
+    // @abimethod()
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/asset_distributor/contract.algo.ts:14
+    // export class AssetDistributor extends Contract {
+    txn GroupIndex
+    intc_1 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_1 // pay
+    ==
+    assert // transaction type is pay
+    // smart_contracts/asset_distributor/contract.algo.ts:41
+    // @abimethod()
+    callsub buyListing
+    intc_1 // 1
+    return
+
+main_bootstrap_route@4:
+    // smart_contracts/asset_distributor/contract.algo.ts:20
+    // public bootstrap(mbrTxn: gtxn.PaymentTxn, assetId: uint64): void {
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/asset_distributor/contract.algo.ts:14
+    // export class AssetDistributor extends Contract {
+    txn GroupIndex
+    intc_1 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_1 // pay
+    ==
+    assert // transaction type is pay
+    txna ApplicationArgs 1
+    btoi
+    // smart_contracts/asset_distributor/contract.algo.ts:20
+    // public bootstrap(mbrTxn: gtxn.PaymentTxn, assetId: uint64): void {
+    callsub bootstrap
+    intc_1 // 1
+    return
+
+main_createApplication_route@3:
+    // smart_contracts/asset_distributor/contract.algo.ts:17
+    // @abimethod({ onCreate: 'require' })
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    !
+    assert // can only call when creating
+    intc_1 // 1
+    return
+
+
+// smart_contracts/asset_distributor/contract.algo.ts::AssetDistributor.bootstrap(mbrTxn: uint64, assetId: uint64) -> void:
+bootstrap:
+    // smart_contracts/asset_distributor/contract.algo.ts:20
+    // public bootstrap(mbrTxn: gtxn.PaymentTxn, assetId: uint64): void {
+    proto 2 0
+    // smart_contracts/asset_distributor/contract.algo.ts:21
+    // assert(mbrTxn.amount >= 200_000, 'Minimum balance must be at least 0.2 algos');
+    frame_dig -2
+    gtxns Amount
+    intc_3 // 200000
+    >=
+    assert // Minimum balance must be at least 0.2 algos
+    // smart_contracts/asset_distributor/contract.algo.ts:22
+    // assert(mbrTxn.receiver === Global.currentApplicationAddress);
+    frame_dig -2
+    gtxns Receiver
+    global CurrentApplicationAddress
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:23
+    // assert(Txn.sender === Global.creatorAddress);
+    txn Sender
+    global CreatorAddress
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:25-29
+    // itxn.assetTransfer({
+    //   assetAmount: 0,
+    //   assetReceiver: Global.currentApplicationAddress,
+    //   xferAsset: assetId,
+    // }).submit();
+    itxn_begin
+    // smart_contracts/asset_distributor/contract.algo.ts:27
+    // assetReceiver: Global.currentApplicationAddress,
+    global CurrentApplicationAddress
+    frame_dig -1
+    itxn_field XferAsset
+    itxn_field AssetReceiver
+    // smart_contracts/asset_distributor/contract.algo.ts:26
+    // assetAmount: 0,
+    intc_0 // 0
+    itxn_field AssetAmount
+    // smart_contracts/asset_distributor/contract.algo.ts:25-29
+    // itxn.assetTransfer({
+    //   assetAmount: 0,
+    //   assetReceiver: Global.currentApplicationAddress,
+    //   xferAsset: assetId,
+    // }).submit();
+    intc_2 // 4
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    bytec_0 // "assetId"
+    // smart_contracts/asset_distributor/contract.algo.ts:31
+    // this.assetId.value = assetId;
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts/asset_distributor/contract.algo.ts::AssetDistributor.buyListing(paymentTxn: uint64) -> void:
+buyListing:
+    // smart_contracts/asset_distributor/contract.algo.ts:41-42
+    // @abimethod()
+    // public buyListing(paymentTxn: gtxn.PaymentTxn): void {
+    proto 1 0
+    // smart_contracts/asset_distributor/contract.algo.ts:43
+    // assert(Txn.sender.isOptedIn(Asset(this.assetId.value)));
+    txn Sender
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    app_global_get_ex
+    assert // check GlobalState exists
+    // smart_contracts/asset_distributor/contract.algo.ts:43
+    // assert(Txn.sender.isOptedIn(Asset(this.assetId.value)));
+    asset_holding_get AssetBalance
+    bury 1
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:44
+    // assert(paymentTxn.receiver === Global.currentApplicationAddress);
+    frame_dig -1
+    gtxns Receiver
+    global CurrentApplicationAddress
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:45
+    // assert(paymentTxn.sender === Txn.sender);
+    frame_dig -1
+    gtxns Sender
+    txn Sender
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:46
+    // assert(Asset(this.assetId.value).balance(Txn.sender) === 0);
+    txn Sender
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    app_global_get_ex
+    assert // check GlobalState exists
+    // smart_contracts/asset_distributor/contract.algo.ts:46
+    // assert(Asset(this.assetId.value).balance(Txn.sender) === 0);
+    asset_holding_get AssetBalance
+    assert // account opted into asset
+    !
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:47
+    // assert(paymentTxn.amount === 2_000);
+    frame_dig -1
+    gtxns Amount
+    pushint 2000 // 2000
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:48
+    // assert(paymentTxn.fee === 2_000);
+    frame_dig -1
+    gtxns Fee
+    pushint 2000 // 2000
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:50-54
+    // itxn.assetTransfer({
+    //   xferAsset: this.assetId.value,
+    //   assetAmount: 1,
+    //   assetReceiver: Txn.sender,
+    // }).submit();
+    itxn_begin
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    app_global_get_ex
+    assert // check GlobalState exists
+    // smart_contracts/asset_distributor/contract.algo.ts:53
+    // assetReceiver: Txn.sender,
+    txn Sender
+    itxn_field AssetReceiver
+    // smart_contracts/asset_distributor/contract.algo.ts:52
+    // assetAmount: 1,
+    intc_1 // 1
+    itxn_field AssetAmount
+    itxn_field XferAsset
+    // smart_contracts/asset_distributor/contract.algo.ts:50-54
+    // itxn.assetTransfer({
+    //   xferAsset: this.assetId.value,
+    //   assetAmount: 1,
+    //   assetReceiver: Txn.sender,
+    // }).submit();
+    intc_2 // 4
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    retsub
+
+
+// smart_contracts/asset_distributor/contract.algo.ts::AssetDistributor.withdrawEarnings() -> void:
+withdrawEarnings:
+    // smart_contracts/asset_distributor/contract.algo.ts:62
+    // assert(Txn.sender === Global.creatorAddress);
+    txn Sender
+    global CreatorAddress
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:63
+    // const appBalanceToSend: uint64 = Global.currentApplicationAddress.balance - 200_000;
+    global CurrentApplicationAddress
+    acct_params_get AcctBalance
+    assert // account funded
+    intc_3 // 200000
+    -
+    // smart_contracts/asset_distributor/contract.algo.ts:64
+    // assert(appBalanceToSend > 0);
+    dup
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:66-69
+    // itxn.payment({
+    //   receiver: Txn.sender,
+    //   amount: appBalanceToSend,
+    // }).submit()
+    itxn_begin
+    // smart_contracts/asset_distributor/contract.algo.ts:67
+    // receiver: Txn.sender,
+    txn Sender
+    itxn_field Receiver
+    itxn_field Amount
+    // smart_contracts/asset_distributor/contract.algo.ts:66-69
+    // itxn.payment({
+    //   receiver: Txn.sender,
+    //   amount: appBalanceToSend,
+    // }).submit()
+    intc_1 // 1
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    retsub
+
+
+// smart_contracts/asset_distributor/contract.algo.ts::AssetDistributor.deleteApplication() -> void:
+deleteApplication:
+    // smart_contracts/asset_distributor/contract.algo.ts:74
+    // assert(Txn.sender === Global.creatorAddress);
+    txn Sender
+    global CreatorAddress
+    ==
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    // smart_contracts/asset_distributor/contract.algo.ts:76
+    // if (this.assetId.hasValue) {
+    app_global_get_ex
+    bury 1
+    bz deleteApplication_after_if_else@3
+    // smart_contracts/asset_distributor/contract.algo.ts:77
+    // assert(Txn.sender.isOptedIn(Asset(this.assetId.value)));
+    txn Sender
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    app_global_get_ex
+    assert // check GlobalState exists
+    // smart_contracts/asset_distributor/contract.algo.ts:77
+    // assert(Txn.sender.isOptedIn(Asset(this.assetId.value)));
+    asset_holding_get AssetBalance
+    bury 1
+    assert
+    // smart_contracts/asset_distributor/contract.algo.ts:79-84
+    // itxn.assetTransfer({
+    //   assetAmount: 0,
+    //   assetCloseTo: Global.creatorAddress,
+    //   xferAsset: this.assetId.value,
+    //   assetReceiver: Global.creatorAddress,
+    // }).submit();
+    itxn_begin
+    // smart_contracts/asset_distributor/contract.algo.ts:81
+    // assetCloseTo: Global.creatorAddress,
+    global CreatorAddress
+    // smart_contracts/asset_distributor/contract.algo.ts:15
+    // assetId = GlobalState<uint64>();
+    intc_0 // 0
+    bytec_0 // "assetId"
+    app_global_get_ex
+    assert // check GlobalState exists
+    // smart_contracts/asset_distributor/contract.algo.ts:83
+    // assetReceiver: Global.creatorAddress,
+    global CreatorAddress
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    itxn_field AssetCloseTo
+    // smart_contracts/asset_distributor/contract.algo.ts:80
+    // assetAmount: 0,
+    intc_0 // 0
+    itxn_field AssetAmount
+    // smart_contracts/asset_distributor/contract.algo.ts:79-84
+    // itxn.assetTransfer({
+    //   assetAmount: 0,
+    //   assetCloseTo: Global.creatorAddress,
+    //   xferAsset: this.assetId.value,
+    //   assetReceiver: Global.creatorAddress,
+    // }).submit();
+    intc_2 // 4
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+
+deleteApplication_after_if_else@3:
+    // smart_contracts/asset_distributor/contract.algo.ts:87-91
+    // itxn.payment({
+    //   receiver: Txn.sender,
+    //   amount: 0,
+    //   closeRemainderTo: Global.creatorAddress,
+    // }).submit()
+    itxn_begin
+    // smart_contracts/asset_distributor/contract.algo.ts:88
+    // receiver: Txn.sender,
+    txn Sender
+    // smart_contracts/asset_distributor/contract.algo.ts:90
+    // closeRemainderTo: Global.creatorAddress,
+    global CreatorAddress
+    itxn_field CloseRemainderTo
+    // smart_contracts/asset_distributor/contract.algo.ts:89
+    // amount: 0,
+    intc_0 // 0
+    itxn_field Amount
+    itxn_field Receiver
+    // smart_contracts/asset_distributor/contract.algo.ts:87-91
+    // itxn.payment({
+    //   receiver: Txn.sender,
+    //   amount: 0,
+    //   closeRemainderTo: Global.creatorAddress,
+    // }).submit()
+    intc_1 // 1
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    retsub
