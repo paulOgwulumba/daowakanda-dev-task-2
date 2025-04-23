@@ -6,6 +6,7 @@ import * as algokit from "@algorandfoundation/algokit-utils";
 import { SMART_CONTRACT_ARC_32 } from "./client";
 import { AppClient } from "@algorandfoundation/algokit-utils/types/app-client";
 
+// Add your wallet address here -- 
 const APP_ID = 2948568810;
 const ASA_ID = 2948546348;
 
@@ -24,6 +25,8 @@ async function loadClient() {
 
 async function loadAccount() {
   const client = await loadClient();
+
+  // Do not push your mnemonic key to GitHub
   const account = client.account.fromMnemonic();
 
   return account;
